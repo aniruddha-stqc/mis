@@ -3,10 +3,10 @@ import csv
 import datetime
 
 file_pointer = open('credentials.csv', 'rt')
-data = csv.reader(file_pointer)
+csv_data = csv.reader(file_pointer)
 
 # Read system credential rows one at a time
-for system_credentials in data:
+for system_credentials in csv_data:
     # A high-level representation of a session with an SSH server. This class wraps Transport, Channel, and SFTPClient to
     # take care of most aspects of authenticating and opening channels.
     client = paramiko.SSHClient()
