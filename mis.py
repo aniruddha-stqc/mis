@@ -3,26 +3,31 @@ import csv
 import datetime
 from tkinter import filedialog, Tk
 
+# Read the CSV file containing: IP address, username, password.
+credential_file = open( file="credentials.csv", mode="rt")
 
-# Read the CSV file containing: IP address, username, password. It is assumed that the CSV file contains a header row
-# with the column names in the following order: "ip","username",password"
-csv_data = csv.DictReader(open(file="credentials.csv", mode="rt"))
+# It is assumed that the CSV file contains a header row with the column names: "ip","username",password"
+csv_data = csv.DictReader( credential_file)
 
 # Hide blank root window
 Tk().withdraw()
 
 # Ask back up download local folder path from user
 target_directory = filedialog.askdirectory(initialdir="/root/Downloads", title="Select Download Folder")
+
 # Destroy tkinter instance
 Tk().destroy()
 
 # Read system credential rows one at a time
 for credential_list in csv_data:
+
     # A high-level representation of a session with an SSH server. This class wraps Transport, Channel, and SFTPClient
     # to take care of most aspects of authenticating and opening channels.
     client = paramiko.SSHClient()
+
     # Load host keys from a system (read-only) file.
     client.load_system_host_keys()
+
     # Interface for defining the policy that SSHClient should use when the SSH server’s hostname is not in either the
     # system host keys or the application’s keys.
     client.set_missing_host_key_policy(policy=paramiko.AutoAddPolicy())
