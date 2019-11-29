@@ -1,9 +1,18 @@
 import paramiko
 import csv
 import datetime
+from tkinter import filedialog, Tk
 
-# Read the CSV file
-csv_data = csv.reader(open('credentials.csv', 'rt'))
+
+# Read the CSV file containing: IP address, username, password
+csv_data = csv.reader(open("credentials.csv", "rt"))
+
+# Hide blank root window
+Tk().withdraw()
+# Ask back up download local folder path
+target_directory = filedialog.askdirectory(initialdir="/root/Downloads", title="Select Download Folder")
+# Destroy tkinter instance
+Tk().destroy()
 
 # Read system credential rows one at a time
 for system_credentials in csv_data:
@@ -25,16 +34,16 @@ for system_credentials in csv_data:
         # Create file name as per the current date
         archive_file = "misappbackup_" + datetime.datetime.now().strftime("%Y%m%d") + ".tar.gz"
 
-        (stdin, stdout, stderr) = client.exec_command( "tar czf " + archive_file + " --absolute-names /var/www ")
+        client.exec_command( "tar czf " + archive_file + " /var/www ")
 
-        for line in stdout.readlines():
-            print(line)
+        # Download the back up file from remote machine to local machine
+        client.open_sftp().get(remotepath="/root/" + archive_file, localpath= target_directory + "/" + archive_file)
 
-        client.open_sftp().get(remotepath="/root/" + archive_file, localpath="/media/root/anurag/" + archive_file)
-
+        # Remove the back up file from remote machine
+        client.exec_command("rm -r " + archive_file)
+        # Close this SSHClient and its underlying Transport.
+        client.close()
     except Exception as e:
         # Print any exception information
         print(e.args)
 
-# Close this SSHClient and its underlying Transport.
-client.close()
