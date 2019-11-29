@@ -6,7 +6,7 @@ from tkinter import filedialog, Tk
 
 # Read the CSV file containing: IP address, username, password. It is assumed that the CSV file contains a header row
 # with the column names in the following order: "ip","username",password"
-csv_data = csv.DictReader(open("credentials.csv", "rt"))
+csv_data = csv.DictReader(open(file="credentials.csv", mode="rt"))
 
 # Hide blank root window
 Tk().withdraw()
@@ -25,7 +25,7 @@ for credential_list in csv_data:
     client.load_system_host_keys()
     # Interface for defining the policy that SSHClient should use when the SSH server’s hostname is not in either the
     # system host keys or the application’s keys.
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.set_missing_host_key_policy(policy=paramiko.AutoAddPolicy())
 
     try:
         # Connect to an SSH server and authenticate to it. The server’s host key is checked against the system host keys
@@ -37,13 +37,13 @@ for credential_list in csv_data:
         archive_file = "misappbackup_" + datetime.datetime.now().strftime("%Y%m%d") + ".tar.gz"
 
         # Execute remote command to create a archive of the required files
-        client.exec_command( "tar czf " + archive_file + " /var/www ")
+        client.exec_command( command="tar czf " + archive_file + " /var/www ")
 
         # Download the back up file from remote machine to local machine
         client.open_sftp().get(remotepath="/root/" + archive_file, localpath= target_directory + "/" + archive_file)
 
         # Remove the back up file from remote machine as it is no more required
-        client.exec_command("rm -r " + archive_file)
+        client.exec_command(command="rm -r " + archive_file)
 
         # Close this SSHClient and its underlying Transport.
         client.close()
