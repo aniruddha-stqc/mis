@@ -2,7 +2,8 @@ import paramiko
 import csv
 import datetime
 from tkinter import filedialog, Tk
-
+#ip,username,password
+#10.0.1.106,root,ismxxxxxx
 # Read the CSV file containing: IP address, username, password.
 credential_file = open( file="credentials.csv", mode="rt")
 
